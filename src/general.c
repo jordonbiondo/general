@@ -123,28 +123,28 @@ object make_int(int x) {
   o.tag = int_t;
   o.value.int_v = x;
   return o;
-};
+}
 
 object make_double(double x) {
   object o;
   o.tag = double_t;
   o.value.double_v = x;
   return o;
-};
+}
 
 object make_byte(byte x) {
   object o;
   o.tag = byte_t;
   o.value.byte_v = x;
   return o;
-};
+}
 
 object make_string(string x) {
   object o;
   o.tag = string_t;
   o.value.string_v = x;
   return o;
-};
+}
 
 object oadd(object* args) {
   int iout = 0;
