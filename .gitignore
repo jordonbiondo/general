@@ -1,3 +1,5 @@
 *~
 \#*
 *.o
+/test/general_tests
+*.dSYM
