@@ -21,20 +21,88 @@
  * THE SOFTWARE.
  */
 
-#include"general.c"
+#include "../src/general.c"
+#include "greatest/greatest.h"
 
-int main (void) {
-  object a = make_int(4);
-  object b = make_int(9);
-  object c = make_double(9);
+GREATEST_MAIN_DEFS();
 
-  object* head = cons (c, cons(b, cons(a, &nil)));
-  object add_output = oadd(head);
-  object add_output2 = oadd(head);
+TEST adding_integers_type () {
+  object a = make_int(3);
+  object b = make_int(4);
+  object* args = cons(a, cons(b, NIL));
+  object result = oadd(args);
+  ASSERTm("Adding ints, returns int.", is(result, int));
+  PASS();
+}
 
-  object minus_output = ominus(head);
-  ppo(add_output);
-  ppo(add_output2);
-  ppo(minus_output);
+TEST adding_integers_value () {
+  object a = make_int(3);
+  object b = make_int(4);
+  object* args;
+  object result;
+
+  args = cons(a, cons(b, NIL));
+  result = oadd(args);
+  ASSERT_EQm("adding two ints", intv(&result), 7);
+
+  args = cons(a, NIL);
+  result = oadd(args);
+  ASSERT_EQm("adding one int", intv(&result), 3);
+
+  args = NIL;
+  result = oadd(args);
+  ASSERT_EQm("adding no ints", intv(&result), 0);
+  PASS();
+}
+
+TEST adding_doubles_type () {
+  object a = make_double(3.1);
+  object b = make_double(4.5);
+  object* args;
+  object result;
+
+  args = cons(a, cons(b, NIL));
+  result = oadd(args);
+  ASSERTm("Adding doubles, returns double.", is(result, double));
+
+  args = NIL;
+  result = oadd(args);
+  ASSERTm("Adding no doubles returns int.", is(result, int));
+  PASS();
+}
+
+TEST adding_doubles_value () {
+  object a = make_double(3.1);
+  object b = make_double(4.5);
+  object* args;
+  object result;
+
+  args = cons(a, cons(b, NIL));
+  result = oadd(args);
+  ppo(result);
+  ASSERT_EQm("adding two doubles", doublev(&result), 7.6);
+
+  args = cons(a, NIL);
+  result = oadd(args);
+  ASSERT_EQm("adding one double", doublev(&result), 3.1);
+
+  args = NIL;
+  result = oadd(args);
+  ASSERT_EQm("adding no doubles", intv(&result), 0);
+  PASS();
+}
+
+SUITE(unit_math) {
+  RUN_TEST(adding_integers_type);
+  RUN_TEST(adding_integers_value);
+
+  RUN_TEST(adding_doubles_type);
+  RUN_TEST(adding_doubles_value);
+}
+
+int main (int argc, char** argv) {
+  GREATEST_MAIN_BEGIN();
+  RUN_SUITE(unit_math);
+  GREATEST_MAIN_END();
 
 }
