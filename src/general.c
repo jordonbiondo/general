@@ -115,6 +115,8 @@ object nil = {
 #define stringv(o) o->value.string_v
 #define errorv(o) o->value.error_v
 #define bytev(o) o->value.byte_v
+object* NIL = &nil;
+
 
 /* #define for_cell(name, object)                                   \ */
 
