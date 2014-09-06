@@ -109,14 +109,14 @@ object nil = {
   .tag = nil_t
 };
 
-#define cellv(o) o->value.cell_v
-#define intv(o) o->value.int_v
-#define doublev(o) o->value.double_v
-#define stringv(o) o->value.string_v
-#define errorv(o) o->value.error_v
-#define bytev(o) o->value.byte_v
 object* NIL = &nil;
 
+#define cellv(o) ((o)->value.cell_v)
+#define intv(o) ((o)->value.int_v)
+#define doublev(o) ((o)->value.double_v)
+#define stringv(o) ((o)->value.string_v)
+#define errorv(o) ((o)->value.error_v)
+#define bytev(o) ((o)->value.byte_v)
 
 /* #define for_cell(name, object)                                   \ */
 
