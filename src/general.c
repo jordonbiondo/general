@@ -150,7 +150,7 @@ object make_string(string x) {
 
 object oadd(object* args) {
   int iout = 0;
-  int dout = 0;
+  double dout = 0;
   bool is_int = true;
   for (object* o = args; ! is((*o), nil); o = cellv(o)->cdr) {
     cell* c = cellv(o);
@@ -173,7 +173,7 @@ object oadd(object* args) {
  */
 object ominus(object* args) {
   int iout = 0;
-  int dout = 0;
+  double dout = 0;
   bool is_int = true;
   cell list = *args->value.cell_v;
   if (is(list.car, int)) {
