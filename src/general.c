@@ -78,7 +78,7 @@ struct general_object {
   union general_values value;
 };
 
-#define is(o, type) (o.tag == type ## _t)
+#define is(o, type) ((o).tag == type ## _t)
 #define is_number(o) ({                                         \
       object __internal_o = o;                                  \
       (is(__internal_o, int) || is(__internal_o, double));      \
@@ -105,11 +105,25 @@ object* cons(object a, object* b) {
   return o;
 }
 
-object nil = {
+#define list1(a) (cons(a, NIL))
+#define list2(b, a) (cons(b, list1(a)))
+#define list3(c, b, a) (cons(c, list2(b, a)))
+#define list4(d, c, b, a) (cons(d, list3(c, b, a)))
+
+#define car(o) (cellv(o).car)
+#define cdr(o) (cellv(o)->cdr)
+
+object nil_global = {
   .tag = nil_t
 };
 
-object* NIL = &nil;
+#define NIL (&nil_global)
+
+object t_global = {
+  .tag = nil_t
+};
+
+#define T (&t_global)
 
 #define cellv(o) ((o)->value.cell_v)
 #define intv(o) ((o)->value.int_v)
@@ -202,6 +216,26 @@ object ominus(object* args) {
     }
   }
   return is_int ? make_int(iout) : make_double (dout);
+}
+
+object olength(object* list) {
+  object* o = list;
+  int length = 0;
+  if (is(*o, nil)) {
+    return make_int(length);
+  }
+
+  while(is(*o, cell)) {
+    length++;
+    o = cdr(o);
+  }
+
+  if (is(*o, nil)) {
+    return make_int(length);
+  } else {
+    //error (1 2 . 3) scenario
+    return make_int(-1);
+  }
 }
 
 

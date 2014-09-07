@@ -92,12 +92,36 @@ TEST adding_doubles_value () {
   PASS();
 }
 
+TEST list_length () {
+  object* l0 = NIL;
+  object l0length = olength(l0);
+  ASSERT_EQ(intv(&l0length), 0);
+
+  object* l1 = list1(*T);
+  object l1length = olength(l1);
+  ASSERT_EQ(intv(&l1length), 1);
+
+  object* l2 = list2(*T, *T);
+  object l2length = olength(l2);
+  ASSERT_EQ(intv(&l2length), 2);
+
+  object* l3 = list3(*T, *T, *T);
+  object l3length = olength(l3);
+  ASSERT_EQ(intv(&l3length), 3);
+
+  object* l4 = list4(*T, *T, *T, *T);
+  object l4length = olength(l4);
+  ASSERT_EQ(intv(&l4length), 4);
+  PASS();
+}
 SUITE(unit_math) {
   RUN_TEST(adding_integers_type);
   RUN_TEST(adding_integers_value);
 
   RUN_TEST(adding_doubles_type);
   RUN_TEST(adding_doubles_value);
+
+  RUN_TEST(list_length);
 }
 
 int main (int argc, char** argv) {
