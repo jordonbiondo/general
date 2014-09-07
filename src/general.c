@@ -132,7 +132,6 @@ object t_global = {
 #define errorv(o) ((o)->value.error_v)
 #define bytev(o) ((o)->value.byte_v)
 
-/* #define for_cell(name, object)                                   \ */
 
 object make_int(int x) {
   object o;

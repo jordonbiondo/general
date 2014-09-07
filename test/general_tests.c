@@ -79,7 +79,6 @@ TEST adding_doubles_value () {
 
   args = cons(a, cons(b, NIL));
   result = oadd(args);
-  ppo(result);
   ASSERT_EQm("adding two doubles", doublev(&result), 7.6);
 
   args = cons(a, NIL);
