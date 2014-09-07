@@ -114,6 +114,19 @@ TEST list_length () {
   ASSERT_EQ(intv(&l4length), 4);
   PASS();
 }
+
+TEST list_append () {
+  SKIP();
+}
+
+TEST list_push () {
+  SKIP();
+}
+
+TEST list_pop () {
+  SKIP();
+}
+
 SUITE(unit_math) {
   RUN_TEST(adding_integers_type);
   RUN_TEST(adding_integers_value);
@@ -122,6 +135,9 @@ SUITE(unit_math) {
   RUN_TEST(adding_doubles_value);
 
   RUN_TEST(list_length);
+  RUN_TEST(list_append);
+  RUN_TEST(list_push);
+  RUN_TEST(list_pop);
 }
 
 int main (int argc, char** argv) {
