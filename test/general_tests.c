@@ -91,6 +91,86 @@ TEST adding_doubles_value () {
   PASS();
 }
 
+TEST number_equal_int() {
+  object a = make_int(1);
+  object b = make_int(90000);
+  ASSERT(ofalsy(*onumber_equal(&a, &b)));
+
+  object c = make_int(100001);
+  object d = make_int(100001);
+  ASSERT(otruthy(*onumber_equal(&d, &c)));
+  ASSERT(otruthy(*onumber_equal(&c, &d)));
+
+  object e = make_int(3993);
+  object f = make_int(intv(&e));
+  ASSERT(otruthy(*onumber_equal(&e, &f)));
+  f = oadd(list2(e, f));
+  ASSERT(ofalsy(*onumber_equal(&e, &f)));
+
+  object g = make_int(-9000000);
+  object h = make_int(-9000000);
+  ASSERT(otruthy(*onumber_equal(&h, &g)));
+  intv(&h) = intv(&h) * -1;
+  ASSERT(ofalsy(*onumber_equal(&h, &g)));
+
+  PASS();
+}
+
+TEST number_equal_double() {
+  object a = make_double(1.0);
+  object b = make_double(90000.0);
+  ASSERT(ofalsy(*onumber_equal(&a, &b)));
+
+  object c = make_double(100.001);
+  object d = make_double(100.001);
+  ASSERT(otruthy(*onumber_equal(&d, &c)));
+  ASSERT(otruthy(*onumber_equal(&c, &d)));
+
+  object e = make_double(39.93);
+  object f = make_double(doublev(&e));
+  ASSERT(otruthy(*onumber_equal(&e, &f)));
+  f = oadd(list2(e, f));
+  ASSERT(ofalsy(*onumber_equal(&e, &f)));
+
+  object g = make_double(-9000000.0000001);
+  object h = make_double(-9000000.0000001);
+  ASSERT(otruthy(*onumber_equal(&h, &g)));
+  doublev(&h) = doublev(&h) * -1;
+  ASSERT(ofalsy(*onumber_equal(&h, &g)));
+
+  PASS();
+}
+
+TEST number_equal_mixed() {
+  object a = make_double(1);
+  object b = make_int(90000);
+  ASSERT(ofalsy(*onumber_equal(&a, &b)));
+
+  object c = make_double(100001);
+  object d = make_int(100001);
+  ASSERT(otruthy(*onumber_equal(&d, &c)));
+  ASSERT(otruthy(*onumber_equal(&c, &d)));
+
+  object e = make_int(3993);
+  object f = make_double(intv(&e));
+  ASSERT(otruthy(*onumber_equal(&e, &f)));
+  f = oadd(list2(e, f));
+  ASSERT(ofalsy(*onumber_equal(&e, &f)));
+
+  object g = make_int(-9000);
+  object h = make_double(-9000);
+  ASSERT(otruthy(*onumber_equal(&h, &g)));
+  doublev(&h) *= -1;
+  ASSERT(ofalsy(*onumber_equal(&h, &g)));
+
+  object i = make_int(5);
+  object j = make_double(5.000000001);
+  ASSERT(ofalsy(*onumber_equal(&i, &j)));
+  doublev(&j) -= 0.000000001;
+  ASSERT(otruthy(*onumber_equal(&i, &j)));
+  PASS();
+}
+
 TEST list_length () {
   object* l0 = NIL;
   object l0length = olength(l0);
@@ -162,6 +242,10 @@ SUITE(unit_math) {
 
   RUN_TEST(adding_doubles_type);
   RUN_TEST(adding_doubles_value);
+
+  RUN_TEST(number_equal_int);
+  RUN_TEST(number_equal_double);
+  RUN_TEST(number_equal_mixed);
 
   RUN_TEST(list_length);
   RUN_TEST(list_append);
