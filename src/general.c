@@ -122,7 +122,7 @@ object nil_global = {
 #define NIL (&nil_global)
 
 object t_global = {
-  .tag = nil_t
+  .tag = t_t
 };
 
 #define T (&t_global)
