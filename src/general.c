@@ -178,6 +178,11 @@ object make_string(string x) {
   return o;
 }
 
+object* oalloc() {
+  object* x = malloc(sizeof(object));
+  return x;
+}
+
 object oadd(object* args) {
   int iout = 0;
   double dout = 0;
@@ -287,6 +292,28 @@ object* olist_equal(object* a, object* b) {
 
   }
   return NIL;
+}
+
+object* ocopy(object* o) {
+  if (is(*o, t)) {
+    return T;
+  } else if (is(*o, nil)) {
+    return NIL;
+  }
+
+  object* copy = oalloc();
+  *copy = *o;
+  if (is(*copy, string)) {
+    string newString = malloc(sizeof(stringv(o)));
+    stringv(copy) = newString;
+    strcpy(stringv(copy), stringv(o));
+  } else if (is(*copy, cell)) {
+    cell* newCell = malloc(sizeof(cell));
+    cellv(copy) = newCell;
+    newCell->car = cellv(o)->car;
+    newCell->cdr = ocopy(cellv(o)->cdr);
+  }
+  return copy;
 }
 
 object* oequal(object* a, object* b) {
