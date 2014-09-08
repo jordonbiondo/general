@@ -115,7 +115,14 @@ TEST list_length () {
 }
 
 TEST list_append () {
-  SKIP();
+  object* l3 = list3(*T, *T, *T);
+  object* l4 = list4(*T, *T, *T, *T);
+
+  object* l7 = oappend(list2(*l3, *l4));
+  object l7length = olength(l7);
+  ASSERT_EQ(intv(&l7length), 7);
+
+  PASS();
 }
 
 TEST list_push () {
@@ -126,7 +133,30 @@ TEST list_pop () {
   SKIP();
 }
 
+TEST booly_test() {
+  ASSERT(is(*booly(3), t));
+  ASSERT(is(*booly(0), nil));
+  ASSERT(is(*booly(true), t));
+  ASSERT(is(*booly(false), nil));
+  PASS();
+}
+
+TEST string_equal () {
+  object s0 = make_string("Hello");
+  object s1 = make_string("Goodbye");
+  object s2 = make_string("Hello");
+
+  ASSERT(is(*ostring_equal(&s0, &s1), nil));
+  ASSERT(is(*ostring_equal(&s0, &s2), t));
+  ASSERT(is(*ostring_equal(&s2, &s0), t));
+  ASSERT(is(*ostring_equal(&s2, &s2), t));
+  PASS();
+}
+
 SUITE(unit_math) {
+
+  RUN_TEST(booly_test);
+
   RUN_TEST(adding_integers_type);
   RUN_TEST(adding_integers_value);
 
@@ -137,6 +167,8 @@ SUITE(unit_math) {
   RUN_TEST(list_append);
   RUN_TEST(list_push);
   RUN_TEST(list_pop);
+
+  RUN_TEST(string_equal);
 }
 
 int main (int argc, char** argv) {

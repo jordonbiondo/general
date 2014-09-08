@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 enum general_tag {
   int_t = 0,
@@ -236,6 +237,68 @@ object olength(object* list) {
   } else {
     //error (1 2 . 3) scenario
     return make_int(-1);
+  }
+}
+
+object* oappend(object* args) {
+  args = args + 0;
+  return NIL;
+}
+
+object* onumber_equal(object* a, object* b) {
+  a = a + 0; //remove me
+  b = b + 0; //remove me
+  if (is(*a, int)) {
+
+  }
+  return NIL;
+}
+
+object* ostring_equal(object* a, object* b) {
+  //todo
+  return booly(strcmp(stringv(a), stringv(b)) == 0);
+}
+
+object* olist_equal(object* a, object* b) {
+  a = a + 0; //remove me
+  b = b + 0; //remove me
+  while(is(*a, cell)) {
+    //todo
+  }
+  for (object* o = a; ! is((*o), cell); o = cellv(o)->cdr) {
+
+  }
+  return NIL;
+}
+
+object* oequal(object* a, object* b) {
+  if (is_number(a) && is_number(b)) {
+
+    return onumber_equal(a, b);
+
+  } else {
+
+    if (a->tag != b->tag) {
+      return NIL;
+    }
+
+    switch (a->tag) {
+    case string_t:
+      return ostring_equal(a, b);
+    case byte_t:
+      return booly(bytev(a) == bytev(b));
+    case error_t:
+      // todo
+      return NIL;
+    case nil_t:
+      return T;
+    case t_t:
+      return T;
+    case cell_t:
+      return olist_equal(a, b);
+    default:
+      return NIL;
+    }
   }
 }
 
