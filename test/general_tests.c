@@ -221,6 +221,55 @@ TEST booly_test() {
   PASS();
 }
 
+TEST object_copy() {
+  object i = make_int(3);
+  object d = make_double(5);
+  object s = make_string("Hello");
+  object b = make_byte('c');
+  object* l = cons(make_int(3), NIL);
+  object* nil = NIL;
+  object* t = T;
+
+  object* icopy = ocopy(&i);
+  ASSERT(is(*icopy, int));
+  ASSERT(intv(icopy) == intv(&i));
+  ASSERT(icopy != &i);
+
+  object* dcopy = ocopy(&d);
+  ASSERT(is(*dcopy, double));
+  ASSERT(doublev(dcopy) == doublev(&d));
+  ASSERT(dcopy != &d);
+
+  object* scopy = ocopy(&s);
+  ASSERT(is(*scopy, string));
+  ASSERT(stringv(scopy) != stringv(&i));
+  ASSERT(otruthy(*ostring_equal(scopy, &s)));
+  ASSERT(icopy != &i);
+
+  object* bcopy = ocopy(&b);
+  ASSERT(is(*bcopy, byte));
+  ASSERT(bytev(bcopy) == bytev(&b));
+  ASSERT(bcopy != &b);
+
+  object* lcopy = ocopy(l);
+  ASSERT(is(*lcopy, cell));
+  ASSERT(lcopy != l);
+  ASSERT(cellv(lcopy) != cellv(l));
+  //todo when object equals is done
+  printf("todo when object equals is done, object_equal");
+  //ASSERT(otruthy(*oequal(lcopy, l)));
+
+  object* nilcopy = ocopy(nil);
+  ASSERT(is(*nilcopy, nil));
+  ASSERT(nilcopy == NIL);
+
+  object* tcopy = ocopy(t);
+  ASSERT(is(*tcopy, t));
+  ASSERT(tcopy == T);
+
+  PASS();
+}
+
 TEST string_equal () {
   object s0 = make_string("Hello");
   object s1 = make_string("Goodbye");
@@ -234,9 +283,6 @@ TEST string_equal () {
 }
 
 SUITE(unit_math) {
-
-  RUN_TEST(booly_test);
-
   RUN_TEST(adding_integers_type);
   RUN_TEST(adding_integers_value);
 
@@ -247,17 +293,30 @@ SUITE(unit_math) {
   RUN_TEST(number_equal_double);
   RUN_TEST(number_equal_mixed);
 
+}
+
+SUITE(unit_list) {
   RUN_TEST(list_length);
   RUN_TEST(list_append);
   RUN_TEST(list_push);
   RUN_TEST(list_pop);
+}
 
+SUITE(unit_string) {
   RUN_TEST(string_equal);
+}
+
+SUITE(unit_object) {
+  RUN_TEST(booly_test);
+  RUN_TEST(object_copy);
 }
 
 int main (int argc, char** argv) {
   GREATEST_MAIN_BEGIN();
   RUN_SUITE(unit_math);
+  RUN_SUITE(unit_list);
+  RUN_SUITE(unit_string);
+  RUN_SUITE(unit_object);
   GREATEST_MAIN_END();
 
 }
