@@ -79,11 +79,12 @@ struct general_object {
 };
 
 #define is(o, type) ((o).tag == type ## _t)
-#define is_number(o) ({                                         \
-      object __internal_o = o;                                  \
-      (is(__internal_o, int) || is(__internal_o, double));      \
-    })
+
 typedef struct general_object object;
+
+static inline bool is_number(object* o) {
+  return (is(*o, int) || is(*o, double));
+}
 
 struct general_cell {
   object car;
@@ -132,6 +133,7 @@ object t_global = {
 #define errorv(o) ((o)->value.error_v)
 #define bytev(o) ((o)->value.byte_v)
 
+#define booly(x) ((x) ? T : NIL)
 
 object make_int(int x) {
   object o;
