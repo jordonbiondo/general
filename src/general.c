@@ -81,6 +81,9 @@ struct general_object {
 
 #define is(o, type) ((o).tag == type ## _t)
 
+#define ofalsy(o) (is((o), nil))
+#define otruthy(o) (! (ofalsy(o)))
+
 typedef struct general_object object;
 
 static inline bool is_number(object* o) {
@@ -133,6 +136,17 @@ object t_global = {
 #define stringv(o) ((o)->value.string_v)
 #define errorv(o) ((o)->value.error_v)
 #define bytev(o) ((o)->value.byte_v)
+
+#define numberv(o)                               \
+  ({                                             \
+    object __x = o;                              \
+    double __value = 0;                          \
+    if (is(__x, int))                            \
+      __value = intv(&__x);                      \
+    else                                         \
+      __value = doublev(&__x);                   \
+    __value;                                     \
+  })
 
 #define booly(x) ((x) ? T : NIL)
 
@@ -248,8 +262,12 @@ object* oappend(object* args) {
 object* onumber_equal(object* a, object* b) {
   a = a + 0; //remove me
   b = b + 0; //remove me
-  if (is(*a, int)) {
-
+  if (is(*a, int) && is(*b, int)) {
+    return booly(intv(a) == intv(b));
+  } else {
+    double ad = numberv(*a);
+    double bd = numberv(*b);
+    return booly(ad == bd);
   }
   return NIL;
 }
