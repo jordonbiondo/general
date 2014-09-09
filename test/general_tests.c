@@ -191,6 +191,11 @@ TEST list_length () {
   object* l4 = list4(*T, *T, *T, *T);
   object l4length = olength(l4);
   ASSERT_EQ(intv(&l4length), 4);
+
+  object* l5 = list4(*T, *T, *T, *T);
+  cdr(cdr(cdr(cdr(l5)))) = l4;
+  object l5length = olength(l5);
+  ASSERT_EQ(intv(&l5length), 8);
   PASS();
 }
 
