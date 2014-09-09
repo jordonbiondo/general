@@ -115,20 +115,20 @@ object* cons(object a, object* b) {
 #define list3(c, b, a) (cons(c, list2(b, a)))
 #define list4(d, c, b, a) (cons(d, list3(c, b, a)))
 
-#define car(o) (cellv(o).car)
+#define car(o) (cellv(o)->car)
 #define cdr(o) (cellv(o)->cdr)
 
-object nil_global = {
+const object nil_global = {
   .tag = nil_t
 };
 
-#define NIL (&nil_global)
+#define NIL ((object*)&nil_global)
 
-object t_global = {
+const object t_global = {
   .tag = t_t
 };
 
-#define T (&t_global)
+#define T ((object*)&t_global)
 
 #define cellv(o) ((o)->value.cell_v)
 #define intv(o) ((o)->value.int_v)
