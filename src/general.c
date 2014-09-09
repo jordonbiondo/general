@@ -96,13 +96,14 @@ struct general_cell {
 };
 
 void ppo(object);
+object* ocopy(object*);
 
 /**
  * Create a Cons cell
  */
 object* cons(object a, object* b) {
   cell* c = malloc(sizeof(cell));
-  c->car = a;
+  c->car = *ocopy(&a);
   c->cdr = b;
   object* o = malloc(sizeof(object));
   o->tag = cell_t;
@@ -273,8 +274,16 @@ object* olast(object* list) {
 }
 
 object* oappend(object* args) {
-  args = args + 0; //remove me
-  return NIL;
+  object* copied = ocopy(args);
+  ofor_each(list, head, copied) {
+    if (!is(*cdr(head), nil)) {
+      object* last = olast(list);
+      cdr(last) = &car(cdr(head));
+    }
+  }
+  return &car(copied);
+}
+
 }
 
 object* onumber_equal(object* a, object* b) {
