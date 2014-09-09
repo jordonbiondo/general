@@ -284,6 +284,16 @@ object* oappend(object* args) {
   return &car(copied);
 }
 
+object* opop(object* list) {
+  object* value = ocopy(&car(list));
+
+  if (olength(list).value.int_v > 1) {
+    car(list) = car(cdr(list));
+    cdr(list) = cdr(cdr(list));
+  } else {
+    *list = *NIL;
+  }
+  return value;
 }
 
 object* onumber_equal(object* a, object* b) {
