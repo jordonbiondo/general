@@ -6,4 +6,4 @@ compiler:
 script: make && make run-test
 branches:
     only:
-      - travistest
+      - master
