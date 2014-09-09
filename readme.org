@@ -1,4 +1,5 @@
-* General
   [[https://api.travis-ci.org/jordonbiondo/general.svg?branch=master]]
+
+* General
   It's generic
 
