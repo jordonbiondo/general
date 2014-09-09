@@ -259,6 +259,10 @@ object olength(object* list) {
   }
 }
 
+#define ofor_each(name, head, thing)                                    \
+  for(object* head = (thing); head != NULL && is(*head, cell); head = cdr(head)) \
+    for(object* name = &car(head); name != NULL; name = NULL)
+
 object* oappend(object* args) {
   args = args + 0; //remove me
   return NIL;
