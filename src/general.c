@@ -263,6 +263,15 @@ object olength(object* list) {
   for(object* head = (thing); head != NULL && is(*head, cell); head = cdr(head)) \
     for(object* name = &car(head); name != NULL; name = NULL)
 
+
+object* olast(object* list) {
+  object* last = list;
+  ofor_each(elm, head, list) {
+    last = head;
+  }
+  return last;
+}
+
 object* oappend(object* args) {
   args = args + 0; //remove me
   return NIL;
