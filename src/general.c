@@ -260,13 +260,11 @@ object olength(object* list) {
 }
 
 object* oappend(object* args) {
-  args = args + 0;
+  args = args + 0; //remove me
   return NIL;
 }
 
 object* onumber_equal(object* a, object* b) {
-  a = a + 0; //remove me
-  b = b + 0; //remove me
   if (is(*a, int) && is(*b, int)) {
     return booly(intv(a) == intv(b));
   } else {
