@@ -96,6 +96,8 @@ struct general_cell {
 };
 
 void ppo(object);
+void pl(object*);
+void pl_internal(object*, bool);
 object* ocopy(object*);
 
 /**
@@ -138,15 +140,15 @@ const object t_global = {
 #define errorv(o) ((o)->value.error_v)
 #define bytev(o) ((o)->value.byte_v)
 
-#define numberv(o)                               \
-  ({                                             \
-    object __x = o;                              \
-    double __value = 0;                          \
-    if (is(__x, int))                            \
-      __value = intv(&__x);                      \
-    else                                         \
-      __value = doublev(&__x);                   \
-    __value;                                     \
+#define numberv(o)                              \
+  ({                                            \
+    object __x = o;                             \
+    double __value = 0;                         \
+    if (is(__x, int))                           \
+      __value = intv(&__x);                     \
+    else                                        \
+      __value = doublev(&__x);                  \
+    __value;                                    \
   })
 
 #define booly(x) ((x) ? T : NIL)
@@ -414,6 +416,51 @@ void ppo(object o) {
       printf("???");
     }
   putchar('\n');
+}
+
+void pl_internal(object* o, bool inside) {
+  printf("(");
+  ofor_each(elm, head, o) {
+    switch(elm->tag)
+      {
+      case int_t:
+        printf("%d", elm->value.int_v);
+        break;
+      case double_t:
+        printf("%f", elm->value.double_v);
+        break;
+      case string_t:
+        printf("%s", elm->value.string_v);
+        break;
+      case byte_t:
+        printf("%#1x", elm->value.byte_v);
+        break;
+      case error_t:
+        printf("%s", elm->value.string_v);
+        break;
+      case nil_t:
+        printf("nil");
+        break;
+      case t_t:
+        printf("t");
+        break;
+      case cell_t:
+        pl_internal(elm, true);
+        break;
+      default:
+        printf("???");
+      }
+    if (!is(*cdr(head), nil)) {
+      printf(", ");
+    }
+  }
+  if (!inside) {
+    putchar('\n');
+  }
+}
+
+void pl(object* o) {
+  pl_internal(o, false);
 }
 
 /* general.c ends here */
