@@ -248,6 +248,15 @@ TEST list_pop () {
   PASS();
 }
 
+TEST list_last() {
+  object* l3 = list3(make_int(3), make_int(4), make_int(5));
+  object* l3last = olast(l3);
+  ASSERT(olength(l3last).value.int_v == 1);
+  ASSERT(intv(&car(l3last)) == 5);
+  ASSERT(is(*olast(NIL), nil));
+  PASS();
+}
+
 TEST booly_test() {
   ASSERT(is(*booly(3), t));
   ASSERT(is(*booly(0), nil));
@@ -360,6 +369,7 @@ SUITE(unit_math) {
 
 SUITE(unit_list) {
   RUN_TEST(list_length);
+  RUN_TEST(list_last);
   RUN_TEST(list_append);
   RUN_TEST(list_push);
   RUN_TEST(list_pop);
