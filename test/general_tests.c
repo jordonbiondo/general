@@ -260,9 +260,23 @@ TEST object_copy() {
   ASSERT(is(*lcopy, cell));
   ASSERT(lcopy != l);
   ASSERT(cellv(lcopy) != cellv(l));
-  //todo when object equals is done
-  printf("todo when object equals is done, object_equal");
+  printf("todo when object equals is done, object_equal\n");
   //ASSERT(otruthy(*oequal(lcopy, l)));
+  object lcopy_length = olength(lcopy);
+  object l_length = olength(l);
+  ASSERT_EQ(intv(&lcopy_length), intv(&l_length));
+
+  object* superl = list4(make_int(3), make_string("foo"), make_byte('d'), *T);
+  superl = cons(*list1(make_double(3.3)), superl);
+  object* superlcopy = ocopy(superl);
+  ASSERT(is(car(superlcopy), cell));
+  ASSERT(is(car(&car(superlcopy)), double));
+  ASSERT(olength(&car(superlcopy)).value.int_v == 1);
+  ASSERT(is(car(cdr(superlcopy)), int));
+  ASSERT(is(car(cdr(cdr(superlcopy))), string));
+  ASSERT(is(car(cdr(cdr(cdr(superlcopy)))), byte));
+  ASSERT(is(car(cdr(cdr(cdr(cdr(superlcopy))))), t));
+  ASSERT(olength(superlcopy).value.int_v == 5);
 
   object* nilcopy = ocopy(nil);
   ASSERT(is(*nilcopy, nil));
