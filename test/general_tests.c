@@ -200,12 +200,28 @@ TEST list_length () {
 }
 
 TEST list_append () {
-  object* l3 = list3(*T, *T, *T);
-  object* l4 = list4(*T, *T, *T, *T);
+  object* l3 = list3(make_int(1), make_int(2), make_int(3));
+  object* l4 = list4(make_int(4), make_int(5), make_int(6), make_int(7));
 
   object* l7 = oappend(list2(*l3, *l4));
   object l7length = olength(l7);
   ASSERT_EQ(intv(&l7length), 7);
+
+  int i = 0;
+  ofor_each(elm, head, l7) {
+    i++;
+    ASSERT(intv(elm) == i);
+  }
+
+  object* lbig = oappend(list4(*l4, *l4, *l3, *l4));
+  object lbiglength = olength(lbig);
+  ASSERT_EQ(intv(&lbiglength), 15);
+
+  int i2 = 0;
+  ofor_each(elm, head, lbig) {
+    i2 += intv(elm);
+  }
+  ASSERT(i2 == ((4 + 5 + 6 + 7) * 3) + (1 + 2 + 3));
 
   PASS();
 }
@@ -215,7 +231,21 @@ TEST list_push () {
 }
 
 TEST list_pop () {
-  SKIP();
+  object* l3 = list3(make_int(5), make_int(4), make_int(3));
+  object* l3head = opop(l3);
+  ASSERT(intv(l3head) == 5);
+  ASSERT(olength(l3).value.int_v == 2);
+  ASSERT(intv(&car(l3)) = 4);
+  ASSERT(intv(&car(cdr(l3))) = 3);
+
+  object* l1 = list1(make_string("hi"));
+  object* l1head = opop(l1);
+  ASSERT(olength(l1).value.int_v == 0);
+  ASSERT(is(*l1, nil));
+  ASSERT(is(*l1head, string));
+  object s = make_string("hi");
+  ASSERT(otruthy(*ostring_equal(l1head, &s)));
+  PASS();
 }
 
 TEST booly_test() {
@@ -223,6 +253,20 @@ TEST booly_test() {
   ASSERT(is(*booly(0), nil));
   ASSERT(is(*booly(true), t));
   ASSERT(is(*booly(false), nil));
+  PASS();
+}
+
+TEST for_each_test() {
+  object* list = list4(make_int(1), make_int(2), make_double(3), make_double(4));
+  int i = 0;
+  double x = 0;
+  ofor_each(value, head, list) {
+    i++;
+    x += numberv(*value);
+  }
+  ASSERT(olength(list).value.int_v == 4);
+  ASSERT(i == 4);
+  ASSERT(x == 10);
   PASS();
 }
 
@@ -327,6 +371,7 @@ SUITE(unit_string) {
 
 SUITE(unit_object) {
   RUN_TEST(booly_test);
+  RUN_TEST(for_each_test);
   RUN_TEST(object_copy);
 }
 
