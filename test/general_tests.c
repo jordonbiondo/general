@@ -227,7 +227,16 @@ TEST list_append () {
 }
 
 TEST list_push () {
-  SKIP();
+  object* l1 = list1(make_int(5));
+  object* l2 = opush(make_int(33), l1);
+  l2 += 0;
+  ASSERT(olength(l1).value.int_v == 2);
+  ASSERT(olength(l2).value.int_v == 2);
+  ASSERT(l1 == l2);
+  ASSERT(intv(&car(l2)) == 33);
+  ASSERT(intv(&car(cdr(l2))) == 5);
+  ASSERT(is(*cdr(cdr(l2)), nil));
+  PASS();
 }
 
 TEST list_pop () {

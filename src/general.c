@@ -298,6 +298,13 @@ object* opop(object* list) {
   return value;
 }
 
+object* opush(object elm, object* list) {
+  cdr(list) = cons(car(list), cdr(list));
+  car(list) = elm;
+  pl(list);
+  return list;
+}
+
 object* onumber_equal(object* a, object* b) {
   if (is(*a, int) && is(*b, int)) {
     return booly(intv(a) == intv(b));
