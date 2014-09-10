@@ -426,7 +426,7 @@ void ppo(object o) {
 }
 
 void pl_internal(object* o, bool inside) {
-  printf("(");
+  putchar('(');
   ofor_each(elm, head, o) {
     switch(elm->tag)
       {
@@ -461,6 +461,7 @@ void pl_internal(object* o, bool inside) {
       printf(", ");
     }
   }
+  putchar(')');
   if (!inside) {
     putchar('\n');
   }
