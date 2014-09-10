@@ -66,6 +66,9 @@ typedef char byte;
 struct general_cell;
 typedef struct general_cell cell;
 
+struct general_object;
+typedef struct general_object object;
+
 union general_values {
   int int_v;
   double double_v;
@@ -84,7 +87,7 @@ struct general_object {
 #define ofalsy(o) (is((o), nil))
 #define otruthy(o) (! (ofalsy(o)))
 
-typedef struct general_object object;
+
 
 static inline bool is_number(object* o) {
   return (is(*o, int) || is(*o, double));
@@ -99,6 +102,7 @@ void ppo(object);
 void pl(object*);
 void pl_internal(object*, bool);
 object* ocopy(object*);
+object* oalloc(void);
 
 /**
  * Create a Cons cell
@@ -107,7 +111,7 @@ object* cons(object a, object* b) {
   cell* c = malloc(sizeof(cell));
   c->car = *ocopy(&a);
   c->cdr = b;
-  object* o = malloc(sizeof(object));
+  object* o = oalloc();
   o->tag = cell_t;
   o->value.cell_v = c;
   return o;
