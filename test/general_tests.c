@@ -328,7 +328,7 @@ TEST object_copy() {
   object l_length = olength(l);
   ASSERT_EQ(intv(&lcopy_length), intv(&l_length));
 
-  object* superl = list4(make_int(3), make_string("foo"), make_byte('d'), *T);
+  object* superl = list4(make_int(3), make_string("foo"), make_byte('d'), *list2(make_int(5), make_int(4)));
   superl = cons(*list1(make_double(3.3)), superl);
   object* superlcopy = ocopy(superl);
   ASSERT(is(car(superlcopy), cell));
@@ -337,7 +337,7 @@ TEST object_copy() {
   ASSERT(is(car(cdr(superlcopy)), int));
   ASSERT(is(car(cdr(cdr(superlcopy))), string));
   ASSERT(is(car(cdr(cdr(cdr(superlcopy)))), byte));
-  ASSERT(is(car(cdr(cdr(cdr(cdr(superlcopy))))), t));
+  ASSERT(is(car(cdr(cdr(cdr(cdr(superlcopy))))), cell));
   ASSERT(olength(superlcopy).value.int_v == 5);
 
   object* nilcopy = ocopy(nil);
