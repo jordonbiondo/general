@@ -394,6 +394,12 @@ TEST string_equal () {
   ASSERT(is(*ostring_equal(&s0, &s2), t));
   ASSERT(is(*ostring_equal(&s2, &s0), t));
   ASSERT(is(*ostring_equal(&s2, &s2), t));
+
+  stringv(&s2) = stringv(&s2) + 1;
+
+  ASSERT(is(*ostring_equal(&s0, &s2), nil));
+  ASSERT(is(*ostring_equal(&s2, &s0), nil));
+
   PASS();
 }
 
