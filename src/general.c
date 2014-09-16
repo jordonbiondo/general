@@ -376,14 +376,19 @@ object* oequal(object* a, object* b) {
     case byte_t:
       return booly(bytev(a) == bytev(b));
     case error_t:
-      // todo
+      return ostring_equal(a, b);
       return NIL;
     case nil_t:
       return T;
     case t_t:
       return T;
-    case cell_t:
-      return olist_equal(a, b);
+    case cell_t: {
+      if (oequal(&car(a), &car(b))) {
+        return oequal(cdr(a), cdr(b));
+      } else {
+        return NIL;
+      }
+    }
     default:
       return NIL;
     }
