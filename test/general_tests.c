@@ -322,8 +322,7 @@ TEST object_copy() {
   ASSERT(is(*lcopy, cell));
   ASSERT(lcopy != l);
   ASSERT(cellv(lcopy) != cellv(l));
-  printf("todo when object equals is done, object_equal\n");
-  //ASSERT(otruthy(*oequal(lcopy, l)));
+  ASSERT(otruthy(*oequal(lcopy, l)));
   object lcopy_length = olength(lcopy);
   object l_length = olength(l);
   ASSERT_EQ(intv(&lcopy_length), intv(&l_length));
@@ -347,6 +346,41 @@ TEST object_copy() {
   object* tcopy = ocopy(t);
   ASSERT(is(*tcopy, t));
   ASSERT(tcopy == T);
+
+  PASS();
+}
+
+TEST object_equal() {
+  object a = make_double(3.0);
+  object b = make_int(4.0);
+  object c = make_string("Hello");
+  object* d = list3(a, b, c);
+  ofor_each(elm, head, d) {
+    ofor_each(elm2, head2, d) {
+      if (elm->tag != elm2->tag) {
+        ASSERT(ofalsy(*oequal(elm, elm2)));
+      }
+    }
+  }
+
+  object* e = list3(a, b, c);
+  ASSERT(otruthy(*oequal(d, e)));
+  ASSERT(otruthy(*oequal(e, d)));
+
+  object* f = list4(make_int(3), make_string("Goodbye"), make_double(4.0), make_byte('d'));
+  object* g = list3(make_string("Goodbye"), make_double(4.0), make_byte('d'));
+
+  ASSERT(ofalsy(*oequal(f, g)));
+  ASSERT(ofalsy(*oequal(g, f)));
+  opop(f);
+  ASSERT(otruthy(*oequal(f, g)));
+  ASSERT(otruthy(*oequal(g, f)));
+
+  object* i = cons(a, &c);
+  object* j = cons(a, &c);
+
+  ASSERT(otruthy(*oequal(i, j)));
+  ASSERT(otruthy(*oequal(j, i)));
 
   PASS();
 }
@@ -392,6 +426,7 @@ SUITE(unit_object) {
   RUN_TEST(booly_test);
   RUN_TEST(for_each_test);
   RUN_TEST(object_copy);
+  RUN_TEST(object_equal);
 }
 
 int main (int argc, char** argv) {
