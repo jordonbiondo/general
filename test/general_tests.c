@@ -91,6 +91,29 @@ TEST adding_doubles_value () {
   PASS();
 }
 
+TEST adding_mixed () {
+  object a = make_double(1.2);
+  object b = make_double(2.9);
+  object c = make_int(1);
+  object d = make_int(2);
+  object e = make_int(100);
+  object f = make_double(200.1);
+
+  object* la = list4(a, b, c, d);
+  object ra = oadd(la);
+  ASSERT_EQ(numberv(ra), 7.1);
+
+  object* lb = list4(c, d, e, f);
+  object rb = oadd(lb);
+  ASSERT_EQ(numberv(rb), 303.1);
+
+  object* lc = list4(e, f, c, a);
+  object rc = oadd(lc);
+  ASSERT_EQ(numberv(rc), 302.3);
+
+  PASS();
+}
+
 TEST number_equal_int() {
   object a = make_int(1);
   object b = make_int(90000);
@@ -409,6 +432,8 @@ SUITE(unit_math) {
 
   RUN_TEST(adding_doubles_type);
   RUN_TEST(adding_doubles_value);
+
+  RUN_TEST(adding_mixed);
 
   RUN_TEST(number_equal_int);
   RUN_TEST(number_equal_double);
