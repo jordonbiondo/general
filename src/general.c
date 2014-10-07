@@ -383,7 +383,7 @@ object* oequal(object* a, object* b) {
     case t_t:
       return T;
     case cell_t: {
-      if (oequal(&car(a), &car(b))) {
+      if (is(*oequal(&car(a), &car(b)), t)) {
         return oequal(cdr(a), cdr(b));
       } else {
         return NIL;

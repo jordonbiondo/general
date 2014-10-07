@@ -390,8 +390,8 @@ TEST object_equal() {
   ASSERT(otruthy(*oequal(d, e)));
   ASSERT(otruthy(*oequal(e, d)));
 
-  object* f = list4(make_int(3), make_string("Goodbye"), make_double(4.0), make_byte('d'));
-  object* g = list3(make_string("Goodbye"), make_double(4.0), make_byte('d'));
+  object* f = list4(make_int(3), make_string("a"), make_double(4.0), make_byte('d'));
+  object* g = list3(make_string("a"), make_double(4.0), make_byte('d'));
 
   ASSERT(ofalsy(*oequal(f, g)));
   ASSERT(ofalsy(*oequal(g, f)));
@@ -404,6 +404,13 @@ TEST object_equal() {
 
   ASSERT(otruthy(*oequal(i, j)));
   ASSERT(otruthy(*oequal(j, i)));
+
+  object* la = list2(make_int(3), make_int(4));
+  object* lb = list2(make_int(3), make_int(9));
+
+  ASSERT(ofalsy(*oequal(la, lb)));
+  intv(&car(cdr(lb))) = intv(&car(cdr(la)));
+  ASSERT(otruthy(*oequal(la, lb)));
 
   PASS();
 }
