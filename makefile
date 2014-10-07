@@ -6,4 +6,4 @@ test/general_tests: test/general_tests.c src/general.c
 test: test/general_tests
 
 run-test:
-	./test/general_tests -v
+	./test/general_tests -v | ./test/greatest/greenest
