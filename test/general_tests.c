@@ -433,6 +433,35 @@ TEST string_equal () {
   PASS();
 }
 
+TEST oalloc_test () {
+  object* a = oalloc();
+  ASSERT(sizeof(a) == sizeof(object*));
+  ASSERT(sizeof(*a) == sizeof(object));
+  ASSERT(a->tag == 0);
+  ASSERT(is(*a, int));
+  ASSERT(!is(*a, double));
+  ASSERT(intv(a) == 0);
+
+  long int current_allocs = objects_allocated;
+  ppo(make_double(current_allocs));
+  list4(make_int(3), make_int(5), make_int(2), make_double(1));
+  ppo(make_double(objects_allocated));
+  ASSERT_EQ(current_allocs + 4, objects_allocated);
+  
+  PASS();
+}
+
+TEST ofree_test () {
+  object* a = oalloc();
+  *a = make_int(3);
+  ASSERT(ofree(a) == 1);
+  ASSERT(ofree(NIL) == 0);
+  ASSERT(ofree(T) == 0);
+  ASSERT(ofree(list3(make_int(3), make_int(4), make_int(5))) == 3);
+  ASSERT(ofree(cons(make_int(3), list1(make_double(4)))) == 2);
+  PASS();
+}
+
 SUITE(unit_math) {
   RUN_TEST(adding_integers_type);
   RUN_TEST(adding_integers_value);
@@ -467,12 +496,18 @@ SUITE(unit_object) {
   RUN_TEST(object_equal);
 }
 
+SUITE(memory) {
+  RUN_TEST(oalloc_test);
+  RUN_TEST(ofree_test);
+}
+
 int main (int argc, char** argv) {
   GREATEST_MAIN_BEGIN();
   RUN_SUITE(unit_math);
   RUN_SUITE(unit_list);
   RUN_SUITE(unit_string);
   RUN_SUITE(unit_object);
+  RUN_SUITE(memory);
   GREATEST_MAIN_END();
 
 }
