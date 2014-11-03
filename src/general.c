@@ -29,85 +29,6 @@
 
 #include "object.h"
 
-/**
- * Create a Cons cell
- */
-object* cons(object a, object* b) {
-  cell* c = malloc(sizeof(cell));
-  c->car = *ocopy(&a);
-  c->cdr = b;
-  object* o = oalloc();
-  o->tag = cell_ot;
-  o->value.cell_v = c;
-  return o;
-}
-
-/* **************************************************************
- * List macros
- * ************************************************************** */
-#define list1(a)          (cons(a, NIL))
-#define list2(b, a)       (cons(b, list1(a)))
-#define list3(c, b, a)    (cons(c, list2(b, a)))
-#define list4(d, c, b, a) (cons(d, list3(c, b, a)))
-
-/* **************************************************************
- * Because lisp
- * ************************************************************** */
-#define car(o)     (cellv(o)->car)
-#define cdr(o)     (cellv(o)->cdr)
-#define cadr(o)    (car(cdr(o)))
-#define caddr(o)   (car(cdr(cdr(o))))
-#define cadddr(o)  (car(cdr(cdr(cdr(o)))))
-#define caadr(o)   (car(cadr(o)))
-#define caaadr(o)  (car(caadr(o)))
-#define cdar(o)    (cdr(car(o)))
-#define cddar(o)   (cdr(cdr(car(o))))
-#define cdddar(o)  (cdr(cdr(cdr(car(o)))))
-#define caar(o)    (car(car(o)))
-#define cddr(o)    (cdr(cdr(o)))
-
-#define ofirst(o)  (car(o))
-#define osecond(o) (cadr(o))
-#define othird(o)  (caddr(o))
-#define ofourth(o) (cadddr(o))
-
-/* **************************************************************
- * nil and t globals for use in C
- * ************************************************************** */
-const object nil_global = {
-  .tag = nil_ot
-};
-
-const object t_global = {
-  .tag = t_ot
-};
-
-#define NIL ((object*)&nil_global)
-#define T ((object*)&t_global)
-
-/* **************************************************************
- * Value macros
- * ************************************************************** */
-#define cellv(o)   ((o)->value.cell_v)
-#define intv(o)    ((o)->value.int_v)
-#define doublev(o) ((o)->value.double_v)
-#define stringv(o) ((o)->value.string_v)
-#define errorv(o)  ((o)->value.error_v)
-#define bytev(o)   ((o)->value.byte_v)
-
-#define numberv(o)                              \
-  ({                                            \
-    object __x = o;                             \
-    double __value = 0;                         \
-    if (is(__x, int))                           \
-      __value = intv(&__x);                     \
-    else                                        \
-      __value = doublev(&__x);                  \
-    __value;                                    \
-  })
-
-#define booly(x) ((x) ? T : NIL)
-
 object make_int(int x) {
   object o;
   o.tag = int_ot;
@@ -136,9 +57,16 @@ object make_string(string x) {
   return o;
 }
 
-long int objects_allocated = 0;
-object** allocated_objects;
-long int allocated_objects_length = 0;
+
+object* cons(object a, object* b) {
+  cell* c = malloc(sizeof(cell));
+  c->car = *ocopy(&a);
+  c->cdr = b;
+  object* o = oalloc();
+  o->tag = cell_ot;
+  o->value.cell_v = c;
+  return o;
+}
 
 object* oalloc() {
   static bool did = false;
@@ -269,14 +197,6 @@ object olength(object* list) {
     return make_int(-1);
   }
 }
-
-#define ofor_each(name, head, thing)            \
-  for(object* head = (thing);                   \
-      head != NULL && is(*head, cell);          \
-      head = cdr(head))                         \
-    for(object* name = &car(head);              \
-        name != NULL;                           \
-        name = NULL)
 
 object* olast(object* list) {
   object* last = list;
