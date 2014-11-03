@@ -27,83 +27,7 @@
 #include <string.h>
 #include <math.h>
 
-enum general_tag {
-  int_t = 0,
-  double_t,
-  string_t,
-  byte_t,
-  nil_t,
-  t_t,
-  cell_t,
-  error_t
-};
-
-const char* tag_string(enum general_tag t) {
-  switch(t)
-    {
-    case int_t:
-      return "int";
-    case double_t:
-      return "double";
-    case string_t:
-      return "string";
-    case byte_t:
-      return "byte";
-    case error_t:
-      return "error";
-    case nil_t:
-      return "nil";
-    case t_t:
-      return "t";
-    case cell_t:
-      return "cell";
-    }
-  return "unknown";
-}
-
-typedef char* string;
-typedef char byte;
-
-struct general_cell;
-typedef struct general_cell cell;
-
-struct general_object;
-typedef struct general_object object;
-
-union general_values {
-  int int_v;
-  double double_v;
-  string string_v; /* also the error */
-  byte byte_v;
-  cell* cell_v;
-};
-
-struct general_object {
-  enum general_tag tag;
-  union general_values value;
-};
-
-#define is(o, type) ((o).tag == type ## _t)
-
-#define ofalsy(o) (is((o), nil))
-#define otruthy(o) (! (ofalsy(o)))
-
-
-
-static inline bool is_number(object* o) {
-  return (is(*o, int) || is(*o, double));
-}
-
-struct general_cell {
-  object car;
-  object* cdr;
-};
-
-void ppo(object);
-void pl(object*);
-void pl_internal(object*, bool);
-object* ocopy(object*);
-object* oalloc(void);
+#include "object.h"
 
 /**
  * Create a Cons cell
@@ -113,37 +37,63 @@ object* cons(object a, object* b) {
   c->car = *ocopy(&a);
   c->cdr = b;
   object* o = oalloc();
-  o->tag = cell_t;
+  o->tag = cell_ot;
   o->value.cell_v = c;
   return o;
 }
 
-#define list1(a) (cons(a, NIL))
-#define list2(b, a) (cons(b, list1(a)))
-#define list3(c, b, a) (cons(c, list2(b, a)))
+/* **************************************************************
+ * List macros
+ * ************************************************************** */
+#define list1(a)          (cons(a, NIL))
+#define list2(b, a)       (cons(b, list1(a)))
+#define list3(c, b, a)    (cons(c, list2(b, a)))
 #define list4(d, c, b, a) (cons(d, list3(c, b, a)))
 
-#define car(o) (cellv(o)->car)
-#define cdr(o) (cellv(o)->cdr)
+/* **************************************************************
+ * Because lisp
+ * ************************************************************** */
+#define car(o)     (cellv(o)->car)
+#define cdr(o)     (cellv(o)->cdr)
+#define cadr(o)    (car(cdr(o)))
+#define caddr(o)   (car(cdr(cdr(o))))
+#define cadddr(o)  (car(cdr(cdr(cdr(o)))))
+#define caadr(o)   (car(cadr(o)))
+#define caaadr(o)  (car(caadr(o)))
+#define cdar(o)    (cdr(car(o)))
+#define cddar(o)   (cdr(cdr(car(o))))
+#define cdddar(o)  (cdr(cdr(cdr(car(o)))))
+#define caar(o)    (car(car(o)))
+#define cddr(o)    (cdr(cdr(o)))
 
+#define ofirst(o)  (car(o))
+#define osecond(o) (cadr(o))
+#define othird(o)  (caddr(o))
+#define ofourth(o) (cadddr(o))
+
+/* **************************************************************
+ * nil and t globals for use in C
+ * ************************************************************** */
 const object nil_global = {
-  .tag = nil_t
+  .tag = nil_ot
+};
+
+const object t_global = {
+  .tag = t_ot
 };
 
 #define NIL ((object*)&nil_global)
-
-const object t_global = {
-  .tag = t_t
-};
-
 #define T ((object*)&t_global)
 
-#define cellv(o) ((o)->value.cell_v)
-#define intv(o) ((o)->value.int_v)
+/* **************************************************************
+ * Value macros
+ * ************************************************************** */
+#define cellv(o)   ((o)->value.cell_v)
+#define intv(o)    ((o)->value.int_v)
 #define doublev(o) ((o)->value.double_v)
 #define stringv(o) ((o)->value.string_v)
-#define errorv(o) ((o)->value.error_v)
-#define bytev(o) ((o)->value.byte_v)
+#define errorv(o)  ((o)->value.error_v)
+#define bytev(o)   ((o)->value.byte_v)
 
 #define numberv(o)                              \
   ({                                            \
@@ -160,28 +110,28 @@ const object t_global = {
 
 object make_int(int x) {
   object o;
-  o.tag = int_t;
+  o.tag = int_ot;
   o.value.int_v = x;
   return o;
 }
 
 object make_double(double x) {
   object o;
-  o.tag = double_t;
+  o.tag = double_ot;
   o.value.double_v = x;
   return o;
 }
 
 object make_byte(byte x) {
   object o;
-  o.tag = byte_t;
+  o.tag = byte_ot;
   o.value.byte_v = x;
   return o;
 }
 
 object make_string(string x) {
   object o;
-  o.tag = string_t;
+  o.tag = string_ot;
   o.value.string_v = x;
   return o;
 }
@@ -200,7 +150,7 @@ object* oalloc() {
   }
 
   object* x = malloc(sizeof(object));
-  
+
   if (objects_allocated >= allocated_objects_length) {
     long int new_size = round(allocated_objects_length * 1.5);
     object** new_list = malloc(sizeof(object*) * new_size);
@@ -210,10 +160,10 @@ object* oalloc() {
     free(old);
     allocated_objects = new_list;
   }
-  
+
   allocated_objects[objects_allocated] = x;
   objects_allocated ++;
-  
+
   x->tag = int_ot;
   x->value.int_v = 0;
   return x;
@@ -239,7 +189,7 @@ int ofree(object* o) {
       }
       o = next;
     } while (o);
-    
+
     return c;
   }
 }
@@ -320,10 +270,13 @@ object olength(object* list) {
   }
 }
 
-#define ofor_each(name, head, thing)                                    \
-  for(object* head = (thing); head != NULL && is(*head, cell); head = cdr(head)) \
-    for(object* name = &car(head); name != NULL; name = NULL)
-
+#define ofor_each(name, head, thing)            \
+  for(object* head = (thing);                   \
+      head != NULL && is(*head, cell);          \
+      head = cdr(head))                         \
+    for(object* name = &car(head);              \
+        name != NULL;                           \
+        name = NULL)
 
 object* olast(object* list) {
   object* last = list;
@@ -412,18 +365,18 @@ object* oequal(object* a, object* b) {
     }
 
     switch (a->tag) {
-    case string_t:
+    case string_ot:
       return ostring_equal(a, b);
-    case byte_t:
+    case byte_ot:
       return booly(bytev(a) == bytev(b));
-    case error_t:
+    case error_ot:
       return ostring_equal(a, b);
       return NIL;
-    case nil_t:
+    case nil_ot:
       return T;
-    case t_t:
+    case t_ot:
       return T;
-    case cell_t: {
+    case cell_ot: {
       if (is(*oequal(&car(a), &car(b)), t)) {
         return oequal(cdr(a), cdr(b));
       } else {
@@ -444,28 +397,28 @@ void ppo(object o) {
   printf("object <%s>\n  value: ", tag_string(o.tag));
   switch(o.tag)
     {
-    case int_t:
+    case int_ot:
       printf("%d", o.value.int_v);
       break;
-    case double_t:
+    case double_ot:
       printf("%f", o.value.double_v);
       break;
-    case string_t:
+    case string_ot:
       printf("%s", o.value.string_v);
       break;
-    case byte_t:
+    case byte_ot:
       printf("%#1x", o.value.byte_v);
       break;
-    case error_t:
+    case error_ot:
       printf("%s", o.value.string_v);
       break;
-    case nil_t:
+    case nil_ot:
       printf("nil");
       break;
-    case t_t:
+    case t_ot:
       printf("nil");
       break;
-    case cell_t:
+    case cell_ot:
       printf("car: \n");
       ppo(cellv((&o))->car);
       break;
@@ -480,28 +433,28 @@ void pl_internal(object* o, bool inside) {
   ofor_each(elm, head, o) {
     switch(elm->tag)
       {
-      case int_t:
+      case int_ot:
         printf("%d", elm->value.int_v);
         break;
-      case double_t:
+      case double_ot:
         printf("%f", elm->value.double_v);
         break;
-      case string_t:
+      case string_ot:
         printf("%s", elm->value.string_v);
         break;
-      case byte_t:
+      case byte_ot:
         printf("%#1x", elm->value.byte_v);
         break;
-      case error_t:
+      case error_ot:
         printf("%s", elm->value.string_v);
         break;
-      case nil_t:
+      case nil_ot:
         printf("nil");
         break;
-      case t_t:
+      case t_ot:
         printf("t");
         break;
-      case cell_t:
+      case cell_ot:
         pl_internal(elm, true);
         break;
       default:
