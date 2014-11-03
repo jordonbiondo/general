@@ -25,6 +25,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 enum general_tag {
   int_t = 0,
@@ -185,9 +186,62 @@ object make_string(string x) {
   return o;
 }
 
+long int objects_allocated = 0;
+object** allocated_objects;
+long int allocated_objects_length = 0;
+
 object* oalloc() {
+  static bool did = false;
+  if (!did) {
+    did = true;
+    printf("setting up stuff\n");
+    allocated_objects = malloc(sizeof(object*) * 50);
+    allocated_objects_length = 50;
+  }
+
   object* x = malloc(sizeof(object));
+  
+  if (objects_allocated >= allocated_objects_length) {
+    long int new_size = round(allocated_objects_length * 1.5);
+    object** new_list = malloc(sizeof(object*) * new_size);
+    memcpy(new_list, allocated_objects, allocated_objects_length);
+    allocated_objects_length = new_size;
+    object** old = allocated_objects;
+    free(old);
+    allocated_objects = new_list;
+  }
+  
+  allocated_objects[objects_allocated] = x;
+  objects_allocated ++;
+  
+  x->tag = int_ot;
+  x->value.int_v = 0;
   return x;
+}
+
+int ofree(object* o) {
+  if (!o) {
+    return 0;
+  } else {
+    int c = 0;
+    object* next = NULL;
+    do {
+      next = NULL;
+      if (is(*o, cell)) {
+        next = cdr(o);
+      }
+      if ((is(*o, string) || is(*o, error)) && stringv(o)) {
+        free(stringv(o));
+      }
+      if (o != NIL && o != T) {
+        free(o);
+        c += 1;
+      }
+      o = next;
+    } while (o);
+    
+    return c;
+  }
 }
 
 object oadd(object* args) {
