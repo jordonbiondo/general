@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-#include "../src/general.c"
+#include "../src/object.c"
 #include "greatest/greatest.h"
 
 GREATEST_MAIN_DEFS();

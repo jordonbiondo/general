@@ -231,6 +231,11 @@ object* ocopy(object*);
 object* oalloc(void);
 
 /**
+ * Free object
+ */
+int ofree(object*);
+
+/**
  * Create a cons cell
  */
 object* cons(object, object*);
