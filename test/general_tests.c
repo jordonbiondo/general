@@ -443,10 +443,8 @@ TEST oalloc_test () {
   ASSERT(intv(a) == 0);
 
   long int current_allocs = objects_allocated;
-  ppo(make_double(current_allocs));
   list4(make_int(3), make_int(5), make_int(2), make_double(1));
-  ppo(make_double(objects_allocated));
-  ASSERT_EQ(current_allocs + 4, objects_allocated);
+  ASSERT_EQ(current_allocs + 8, objects_allocated);
   
   PASS();
 }
