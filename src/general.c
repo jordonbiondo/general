@@ -375,20 +375,7 @@ object* onumber_equal(object* a, object* b) {
 }
 
 object* ostring_equal(object* a, object* b) {
-  //todo
   return booly(strcmp(stringv(a), stringv(b)) == 0);
-}
-
-object* olist_equal(object* a, object* b) {
-  a = a + 0; //remove me
-  b = b + 0; //remove me
-  while(is(*a, cell)) {
-    //todo
-  }
-  for (object* o = a; ! is((*o), cell); o = cellv(o)->cdr) {
-
-  }
-  return NIL;
 }
 
 object* ocopy(object* o) {
